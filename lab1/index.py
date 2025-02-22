@@ -1,5 +1,5 @@
 import pandas as pd
-import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 
@@ -58,35 +58,32 @@ def main():
         "writing score": "Оцінка з письма"
     })
 
-    print(dfStudents.head())
+    # Візуалізація розподілу оцінок
+    dfStudents[['Оцінка з математики', 'Оцінка з читання', 'Оцінка з письма']].hist(bins=20, edgecolor='black', alpha=0.7)
+    plt.suptitle("Розподіл оцінок")
+    plt.show()
 
     # Додавання нових колонок: загальна оцінка та середня оцінка
     dfStudents["Загальна оцінка"] = dfStudents["Оцінка з математики"] + dfStudents["Оцінка з читання"] + dfStudents["Оцінка з письма"]
     dfStudents["Середня оцінка"] = dfStudents["Загальна оцінка"] / 3
 
+    # Візуалізація середньої оцінки
+    plt.figure(figsize=(8, 5))
+    sns.histplot(dfStudents["Середня оцінка"], bins=20, kde=True, color='blue')
+    plt.title("Розподіл середньої оцінки")
+    plt.xlabel("Середня оцінка")
+    plt.ylabel("Частота")
+    plt.show()
+
     # Розрахунок статистики
-    stats = {
-        "Оцінка з математики": {
-            "Середнє": dfStudents["Оцінка з математики"].mean(),
-            "Максимум": dfStudents["Оцінка з математики"].max(),
-            "Мінімум": dfStudents["Оцінка з математики"].min()
-        },
-        "Оцінка з читання": {
-            "Середнє": dfStudents["Оцінка з читання"].mean(),
-            "Максимум": dfStudents["Оцінка з читання"].max(),
-            "Мінімум": dfStudents["Оцінка з читання"].min()
-        },
-        "Оцінка з письма": {
-            "Середнє": dfStudents["Оцінка з письма"].mean(),
-            "Максимум": dfStudents["Оцінка з письма"].max(),
-            "Мінімум": dfStudents["Оцінка з письма"].min()
-        },
-        "Середня оцінка": {
-            "Середнє": dfStudents["Середня оцінка"].mean(),
-            "Максимум": dfStudents["Середня оцінка"].max(),
-            "Мінімум": dfStudents["Середня оцінка"].min()
-        }
-    }
+    stats = dfStudents[['Оцінка з математики', 'Оцінка з читання', 'Оцінка з письма', 'Середня оцінка']].agg(['mean', 'max', 'min'])
+    print("\nСтатистика оцінок:\n", stats)
+
+    # Візуалізація boxplot для оцінок
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(data=dfStudents[['Оцінка з математики', 'Оцінка з читання', 'Оцінка з письма']], palette="Set2")
+    plt.title("Boxplot оцінок")
+    plt.show()
 
     # Виведення результатів
     print("Статистика оцінок:")
@@ -106,6 +103,18 @@ def main():
     print("\nКореляція середньої оцінки з іншими змінними:")
     print(correlation_matrix["Середня оцінка"])
 
+    # Візуалізація кореляційної матриці
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
+    plt.title("Кореляційна матриця")
+    plt.show()
+
+    # Візуалізація залежності середньої оцінки від освіти батьків
+    plt.figure(figsize=(10, 5))
+    sns.boxplot(x="Освіта батьків", y="Середня оцінка", data=dfStudents, palette="Set3")
+    plt.xticks(rotation=45)
+    plt.title("Розподіл середніх оцінок за рівнем освіти батьків")
+    plt.show()
 
 
 main()
